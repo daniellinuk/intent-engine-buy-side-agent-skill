@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+dir=$(dirname -- "$(readlink -f -- "$0")")
+case "$(uname -s)/$(uname -m)" in
+  Linux/x86_64) exec "$dir/intent-linux-x86_64" "$@" ;;
+esac
+printf '{"error":{"code":"UNSUPPORTED_PLATFORM","message":"this skill bundles the intent CLI for x86_64 Linux only, not %s/%s","hint":"run the agent on x86_64 Linux"}}\n' "$(uname -s)" "$(uname -m)"
+exit 1
