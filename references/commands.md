@@ -11,8 +11,9 @@
 | Secret key, overriding the file | | `INTENT_SECRET_KEY` | |
 | Seconds per network call, 1 to 10 | `--timeout` | | `10` |
 | Jev key, for judging each offer's `fit` | | `JEV_API_KEY` | none: offers are ranked on currency and price only |
+| The user's AIR email, for `fund` | `--email` | `INTENT_AIR_EMAIL` | |
 
-`state.json`, next to the key file, remembers the accepts and declines already sent and where `--new` stopped. Losing it only means a repeat is sent again.
+`state.json`, next to the key file, remembers the accepts, declines and funding already sent and where `--new` stopped. Losing it only means a repeat is sent again.
 
 ## key init / key show
 
@@ -48,6 +49,12 @@ Output: `{draft, flags, service_checked, ok_to_post}`. Each flag is `{field, kin
 ## post
 
 `intent post --draft draft.json` (or `--draft -` for stdin) signs and publishes. Output: `{id, address, d, status, seq, duplicate}`. `duplicate: true` means the draft was already posted and nothing changed. `--dry-run` prints the signed event without publishing.
+
+## fund (temporary, demo only)
+
+`intent fund <d> --email <AIR email> --instruction <file> [--dry-run]` reads what `clink instruction get --purchase-instruction-id <id> --format json` printed (a file, or `-` for stdin) and asks the service to put a funded instruction credential in that AIR account. Only an `ACTIVE` instruction works, and the service funds only the AIR emails on its demo list. For now nothing checks the instruction with Clink.
+
+Output: `{issued, intent, vct, claims, expires_at, instruction_id, duplicate}`. `claims` holds `network`, `instruction`, `spending_cap` (`amount` in minor units, `currency`, and `period` when the cap renews weekly, monthly or yearly), `title`, `description` and `merchant_categories`. `expires_at` is when the instruction ends (Unix seconds). `--dry-run` prints the claims without asking the service. Run again for the same intent, instruction and email, it issues nothing and prints the earlier result (`duplicate: true`).
 
 ## offers
 
@@ -101,4 +108,8 @@ Every error has a `hint` with the next step. The common ones:
 | `OFFER_EXPIRED` | the offer lapsed |
 | `CHECKOUT_NOT_LIVE` | the merchant has no session; `details.handoff` has the terms for the payment enabler |
 | `UCP_UNAVAILABLE` | the merchant's checkout endpoint failed; try later |
+| `INSTRUCTION_INVALID` | `fund` got something other than `clink instruction get` output |
+| `INSTRUCTION_NOT_ACTIVE` | the Clink instruction is not signed yet, or has ended |
+| `FUNDING_NOT_ALLOWED`, `FUNDING_UNAVAILABLE` | this service does not fund this user; the intent stays up unfunded |
+| `ISSUER_FAILED` | the credential issuer failed; try again in a minute |
 | `USAGE` | a wrong flag; `details.examples` shows correct calls |

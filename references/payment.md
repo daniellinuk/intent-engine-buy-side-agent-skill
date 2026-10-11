@@ -66,6 +66,14 @@ When `discount_codes` or `eligibility` is not empty, the offer's price relies on
 intent accept <offer id> --checkout created-checkout.json
 ```
 
+## Funding from a Clink instruction (temporary, demo only)
+
+`intent fund` turns a Clink VIC instruction into the funded credential merchants will see. The instruction comes from the payment skill: read its `references/clink-instruction.md`. `clink instruction create` prints `data.instructionId`, and the user signs it with a passkey; `clink instruction list --valid-only --payment-instrument-id <id> --format json` lists the active ones. Use an instruction the user created for this purchase.
+
+`intent fund` reads the instruction's title, description, `amountLimit` and `currencyCode` (or its first mandate's), its mandates' `merchantCategoryCode`, its recurring frequency and `effectiveUntilTime`. Clink's `amountLimit` is in major units (`150.00`); the credential holds minor units (`15000`). The CLI converts once, so pass Clink's JSON unchanged.
+
+When the user later pays for an offer on this intent, the payment skill's instruction matching should find this same instruction.
+
 ## After paying
 
 - Decline the other offers: `intent decline <id> --reason chose-another` for each id in `other_offers`.
