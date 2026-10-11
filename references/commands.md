@@ -6,7 +6,7 @@
 
 | Setting | Flag | Environment | Default |
 | --- | --- | --- | --- |
-| Service URL | `--service` | `INTENT_SERVICE_URL` | `http://localhost:7700` |
+| Service URL | `--service` | `INTENT_SERVICE_URL` | `https://api.yentin.xyz`, set by `bin/intent` |
 | Key file | `--key-file` | `INTENT_KEY_FILE` | `~/.config/intent/key` |
 | Secret key, overriding the file | | `INTENT_SECRET_KEY` | |
 | Seconds per network call, 1 to 10 | `--timeout` | | `10` |

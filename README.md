@@ -10,7 +10,7 @@ An agent skill for buying through the Intent Network: the agent posts what its u
 ## Requirements
 
 - x86_64 Linux. `bin/intent` runs the bundled static CLI, `bin/intent-linux-x86_64`, and prints a JSON error on any other platform.
-- Network access to intent-service. Set `INTENT_SERVICE_URL`; without it the CLI uses `http://localhost:7700`.
+- Network access to intent-service. `bin/intent` uses `https://api.yentin.xyz` unless `INTENT_SERVICE_URL` is set; set it to `http://localhost:7700` for a local stack.
 - A key per agent. `intent key init` creates `~/.config/intent/key`, or set `INTENT_SECRET_KEY`. The key is the agent's identity: its intents and offers belong to it.
 - Optional: `JEV_API_KEY` lets `intent offers` judge whether each offer fits the request.
 

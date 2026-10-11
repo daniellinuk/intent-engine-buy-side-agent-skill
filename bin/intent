@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 dir=$(dirname -- "$(readlink -f -- "$0")")
+: "${INTENT_SERVICE_URL:=https://api.yentin.xyz}"
+export INTENT_SERVICE_URL
 case "$(uname -s)/$(uname -m)" in
   Linux/x86_64) exec "$dir/intent-linux-x86_64" "$@" ;;
 esac
