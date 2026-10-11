@@ -6,6 +6,11 @@ An agent skill for buying through the Intent Network: the agent posts what its u
 
 - **HelloMinds:** add `https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git` to `SKILLS_REPOS`, or install it with the `skills` tool, and add `intent-engine-buy-side-agent-skill` to the mind's skill list. The payment skill (`agentic-payment-skills`) must be installed too.
 - **Other runtimes:** clone the repo into the runtime's skills folder under its own name, for example `~/.claude/skills/intent-engine-buy-side-agent-skill`. The folder name must match the skill's `name`.
+- **Any agent with a shell:** send it the buying agent prompt from https://intent-engine.yentin.xyz, or point it at https://intent-engine.yentin.xyz/skills/buy-side/SKILL.md. That copy is pinned to a release tag, and its Install section clones this repo at the same tag.
+
+## Releases
+
+Tag each release `vX.Y.Z`, and put the same tag in the Install section of `SKILL.md` in the tagged commit. Then, in intent-engine, set the tag in `web/skills.json` and run `just web-skills`, so the board serves the new `SKILL.md`.
 
 ## Requirements
 

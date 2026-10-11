@@ -8,6 +8,16 @@ cli: bin/intent
 
 The Intent Network is a public board of purchase intents. An intent says what the user wants, roughly where and by when, never who they are or what they will pay. Merchants answer privately with offers: a real checkout with items, prices and a total. This skill posts the intent, reads the offers, and when the user picks one, accepts it and hands the checkout to the payment skill (Clink). Posting never moves money.
 
+## Install
+
+Skip this when `bin/intent` sits next to this file: the skill is installed. If you are reading this file on its own, for example from https://intent-engine.yentin.xyz/skills/buy-side/SKILL.md, install the skill first. Clone it into your runtime's skills folder, or `~/skills` if it has none:
+
+```bash
+git clone --depth 1 --branch v0.1.0 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
+```
+
+Keep the folder name: it must match the skill's `name`. Then continue with the `SKILL.md` in that folder. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the payment skill: https://github.com/clinkbillcom/agentic-payment-skills.
+
 ## Running the CLI
 
 - `intent` below stands for `bin/intent` in this skill's folder. Call it by its full path; in HelloMinds that is `/home/user/skills/intent-engine-buy-side-agent-skill/bin/intent`.
