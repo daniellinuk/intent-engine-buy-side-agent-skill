@@ -19,6 +19,14 @@
 
 `intent key init` creates the key file (mode 0600) or, when it exists, shows it: `{pubkey, npub, key_file, source, created}`. `intent key show` prints the key in use. `intent key rotate --yes` cancels every open intent and switches to a new key; run it only if the key leaked.
 
+## air bind / air credentials
+
+`intent air bind [--new]` connects this agent to the user's AIR account. The first run makes the agent's own AIR key and prints `{status: "pending", url, expires_at}`. Send the `url` to the user; they log in to AIR there and approve. Later runs check the same link and print `{status: "bound", user_id, key_id, partner_id}` once the user has approved; `error` holds AIR's code if their last try failed. An expired link is replaced on the next run. `--new` makes a new key and link, replacing the earlier binding.
+
+The AIR key stays in `air.json` beside the key file (mode 0600) and is never printed; only its public half leaves the machine.
+
+`intent air credentials [--limit 1..100]` lists the credentials in the user's AIR account: `{user_id, credentials, more}`, each with `schema_id`, `issuer`, `vct` and `created_at`.
+
 ## geohash
 
 `intent geohash <lat> <lon> [--precision 2..5]` prints `{geohash, precision, cell}`. Precision 5 is a cell of about 5 km, 4 about 40 by 20 km. Latitude comes first.
@@ -108,6 +116,9 @@ Every error has a `hint` with the next step. The common ones:
 | `OFFER_EXPIRED` | the offer lapsed |
 | `CHECKOUT_NOT_LIVE` | the merchant has no session; `details.handoff` has the terms for the payment enabler |
 | `UCP_UNAVAILABLE` | the merchant's checkout endpoint failed; try later |
+| `AIR_NOT_BOUND` | this agent is not connected to AIR yet: `intent air bind` |
+| `AIR_SESSION_FAILED` | AIR no longer accepts the agent's key: `intent air bind --new` |
+| `AIR_BIND_UNAVAILABLE` | this service does not connect agents to AIR |
 | `INSTRUCTION_INVALID` | `fund` got something other than `clink instruction get` output |
 | `INSTRUCTION_NOT_ACTIVE` | the Clink instruction is not signed yet, or has ended |
 | `FUNDING_NOT_ALLOWED`, `FUNDING_UNAVAILABLE` | this service does not fund this user; the intent stays up unfunded |

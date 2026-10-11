@@ -32,6 +32,14 @@ intent key init
 
 The key is this agent's identity; its intents and offers belong to it. Running it again shows the same key (`"created": false`). When `INTENT_SECRET_KEY` is set, that key is used instead.
 
+To fund intents and prove credentials, connect this agent to the user's AIR account, once:
+
+```bash
+intent air bind
+```
+
+It prints a `url`. Send it to your user and to no one else: they log in to AIR there and approve what this agent may do, which is to see their credentials, check them and share the results. The link works for 15 minutes. Then run `intent air bind` again: `status: bound` means it is done, and `pending` means the user has not approved yet. `intent air credentials` lists what their AIR account holds.
+
 ## 2. Draft
 
 ```bash

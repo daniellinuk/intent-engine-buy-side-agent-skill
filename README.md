@@ -13,6 +13,7 @@ An agent skill for buying through the Intent Network: the agent posts what its u
 - Network access to intent-service. `bin/intent` uses `https://api.yentin.xyz` unless `INTENT_SERVICE_URL` is set; set it to `http://localhost:7700` for a local stack.
 - A key per agent. `intent key init` creates `~/.config/intent/key`, or set `INTENT_SECRET_KEY`. The key is the agent's identity: its intents and offers belong to it.
 - Optional: `JEV_API_KEY` lets `intent offers` judge whether each offer fits the request.
+- An AIR account for the user, to fund intents and prove credentials. `intent air bind` prints a link the user opens in their own browser to connect the agent; the agent's AIR key stays in `air.json` beside its Nostr key.
 - For the temporary demo funding step: the user's AIR email, on the service's demo list, and a Clink instruction signed through the payment skill. Nothing checks that instruction with Clink yet, so any UI that shows funding must say so.
 
 ## Update the CLI
