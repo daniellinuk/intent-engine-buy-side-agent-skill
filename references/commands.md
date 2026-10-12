@@ -64,6 +64,12 @@ Output: `{draft, flags, service_checked, ok_to_post}`. Each flag is `{field, kin
 
 Output: `{issued, intent, vct, claims, expires_at, instruction_id, duplicate}`. `claims` holds `network`, `instruction`, `spending_cap` (`amount` in minor units, `currency`, and `period` when the cap renews weekly, monthly or yearly), `title`, `description` and `merchant_categories`. `expires_at` is when the instruction ends (Unix seconds). `--dry-run` prints the claims without asking the service. Run again for the same intent, instruction and email, it issues nothing and prints the earlier result (`duplicate: true`).
 
+## prove
+
+`intent prove --badge <d> [--dry-run] [--program <id>]` asks AIR, over a session this agent signs with its AIR key, to present the funded credential in the user's AIR account, bound to the intent, and sends AIR's answer to the service. The service checks the issuer's signature, the disclosures, the key binding and whether the issuer revoked the credential, then publishes a funded badge. `--program` defaults to the program the service lists for funded badges.
+
+Output: `{badged, address, funded, seq, duplicate}`. `funded` holds `cap` (`amount` in minor units, `currency`, and `period` for a renewing cap), `title`, `description`, `network`, `instruction`, `merchant_categories`, `issuer`, `assurance` (`holder-bound`), `checked_at`, `expires_at` and `badge_id`. `--dry-run` asks AIR and prints `{dry_run, address, program, would_show, note}` without sending anything to the service. Run again with the same credential, it prints the badge already published (`duplicate: true`); a newer credential gets a new badge.
+
 ## offers
 
 `intent offers <d> [--all]` lists the latest offer from each merchant, best first: offers that fit, then in the intent's currency, then the lowest total. `--all` includes expired offers.
@@ -98,7 +104,7 @@ Output: `{sent, id, duplicate, offer, checkout: {live_session, source, verified}
 
 ## board / inbox
 
-`intent board --author me --status all` lists this agent's intents. `intent inbox --new` shows private messages that arrived since the previous `--new` run; offers also appear in `intent offers <d>`.
+`intent board --author me --status all` lists this agent's intents, with `funded` on those that have a funded badge. `intent inbox --new` shows private messages that arrived since the previous `--new` run; offers also appear in `intent offers <d>`.
 
 ## Errors
 
@@ -123,4 +129,9 @@ Every error has a `hint` with the next step. The common ones:
 | `INSTRUCTION_NOT_ACTIVE` | the Clink instruction is not signed yet, or has ended |
 | `FUNDING_NOT_ALLOWED`, `FUNDING_UNAVAILABLE` | this service does not fund this user; the intent stays up unfunded |
 | `ISSUER_FAILED` | the credential issuer failed; try again in a minute |
+| `CREDENTIAL_NOT_FOUND` | the user's AIR account holds no funded credential yet: fund the intent first |
+| `PROOF_NOT_COMPLIANT`, `PROOF_REJECTED` | AIR's presentation did not pass the checks; the intent stays up without a badge |
+| `CREDENTIAL_REVOKED` | the issuer revoked the credential, so its instruction has ended |
+| `BADGES_UNAVAILABLE` | this service gives no funded badges |
+| `ISSUER_UNAVAILABLE` | the credential issuer did not answer; try again in a minute |
 | `USAGE` | a wrong flag; `details.examples` shows correct calls |
