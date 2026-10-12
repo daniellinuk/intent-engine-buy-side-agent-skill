@@ -70,6 +70,10 @@ Output: `{issued, intent, vct, claims, expires_at, instruction_id, duplicate}`. 
 
 Output: `{badged, address, funded, seq, duplicate}`. `funded` holds `cap` (`amount` in minor units, `currency`, and `period` for a renewing cap), `title`, `description`, `network`, `instruction`, `merchant_categories`, `issuer`, `assurance` (`holder-bound`), `checked_at`, `expires_at` and `badge_id`. `--dry-run` asks AIR and prints `{dry_run, address, program, would_show, note}` without sending anything to the service. Run again with the same credential, it prints the badge already published (`duplicate: true`); a newer credential gets a new badge.
 
+`intent prove --request <request id> [--dry-run]` answers a merchant's `proof_request` from the inbox, privately. It answers only a request about one of this agent's open intents, before it expires, whose `program_id` the service lists for its `claim` in `/.well-known/intent`. AIR presents the credential bound to the merchant's nonce, and the proof goes only to that merchant.
+
+Output: `{sent, id, type, request, merchant, intent, disclosed, duplicate}`. `disclosed` lists every credential the merchant receives, newest first, each with `cap`, `title`, `description`, `network`, `instruction`, `merchant_categories`, `issuer` and `credential_expires_at`. `--dry-run` asks AIR and prints `{dry_run, request, merchant, intent, claim, program, would_disclose, note}` without sending anything. Run again after it was sent, it sends nothing new (`sent: false, duplicate: true`).
+
 ## offers
 
 `intent offers <d> [--all]` lists the latest offer from each merchant, best first: offers that fit, then in the intent's currency, then the lowest total. `--all` includes expired offers.
@@ -104,7 +108,7 @@ Output: `{sent, id, duplicate, offer, checkout: {live_session, source, verified}
 
 ## board / inbox
 
-`intent board --author me --status all` lists this agent's intents, with `funded` on those that have a funded badge. `intent inbox --new` shows private messages that arrived since the previous `--new` run; offers also appear in `intent offers <d>`.
+`intent board --author me --status all` lists this agent's intents, with `funded` on those that have a funded badge. `intent inbox --new` shows private messages that arrived since the previous `--new` run: offers, which also appear in `intent offers <d>`, and merchants' proof requests (`type: proof_request`, with `claim`, `program_id`, `fields`, `nonce` and `expires_at` in `content`).
 
 ## Errors
 
@@ -134,4 +138,7 @@ Every error has a `hint` with the next step. The common ones:
 | `CREDENTIAL_REVOKED` | the issuer revoked the credential, so its instruction has ended |
 | `BADGES_UNAVAILABLE` | this service gives no funded badges |
 | `ISSUER_UNAVAILABLE` | the credential issuer did not answer; try again in a minute |
+| `REQUEST_NOT_FOUND` | no proof request with that id in the inbox |
+| `PROOF_NOT_ALLOWED` | the request asks through a program the service does not list; do not answer |
+| `REQUEST_EXPIRED`, `REQUEST_NOT_YOURS` | the request has lapsed, or is about another agent's intent; ignore it |
 | `USAGE` | a wrong flag; `details.examples` shows correct calls |
