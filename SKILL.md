@@ -10,13 +10,18 @@ The Intent Network is a public board of purchase intents. An intent says what th
 
 ## Install
 
-Skip this when `bin/intent` sits next to this file: the skill is installed. If you are reading this file on its own, for example from https://intent-engine.yentin.xyz/skills/buy-side/SKILL.md, install the skill first. Clone it into your runtime's skills folder, or `~/skills` if it has none:
+Skip this when `bin/intent` is already in this folder. The CLI is that file. It is not on `PATH`. In HelloMinds its path is `/home/user/skills/intent-engine-buy-side-agent-skill/bin/intent`, and every `intent` command below means that path.
+
+If you are reading this from the board and the folder is not there yet, install it with the `skills` tool: mode `install`, name `intent-engine-buy-side-agent-skill`, repo `https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git`. Do not `git clone` into `/home/user/skills` from `bash`. That directory is replaced from the host on the next command, so a clone made there disappears and the install starts over. When the tool returns, the next `bash` command finds the skill at `/home/user/skills/intent-engine-buy-side-agent-skill/`. There is no further install step.
+
+Without a `skills` tool, clone the pinned release into a directory you control:
 
 ```bash
-git clone --depth 1 --branch v0.1.0 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
+mkdir -p ~/skills
+git clone --depth 1 --branch v0.1.1 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
 ```
 
-Keep the folder name: it must match the skill's `name`. Then continue with the `SKILL.md` in that folder. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the payment skill: https://github.com/clinkbillcom/agentic-payment-skills.
+Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by its full path. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the payment skill: https://github.com/clinkbillcom/agentic-payment-skills.
 
 ## Running the CLI
 
