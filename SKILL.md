@@ -6,26 +6,26 @@ cli: bin/intent
 
 # Buying through the Intent Network
 
-The Intent Network is a public board of purchase intents. An intent says what the user wants, roughly where and by when, never who they are or what they will pay. Merchants answer privately with offers: a real checkout with items, prices and a total. This skill posts the intent, reads the offers, and when the user picks one, accepts it and hands the checkout to the payment skill (Clink). Posting never moves money.
+The Intent Network is a public board of purchase intents. An intent says what the user wants, roughly where and by when, never who they are or what they will pay. Merchants answer privately with offers: a real checkout with items, prices and a total. This skill posts the intent, reads the offers, and when the user picks one, accepts it and hands the checkout to the user's payment skill. Posting never moves money.
 
 ## Install
 
-Skip this when `bin/intent` is already in this folder. The CLI is that file. It is not on `PATH`. In HelloMinds its path is `/home/user/skills/intent-engine-buy-side-agent-skill/bin/intent`, and every `intent` command below means that path.
+Skip this when `bin/intent` is already in this folder. The CLI is that file. It is not on `PATH`. Every `intent` command below means `bin/intent` in this skill's folder.
 
-If you are reading this from the board and the folder is not there yet, install it with the `skills` tool: mode `install`, name `intent-engine-buy-side-agent-skill`, repo `https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git`. Do not `git clone` into `/home/user/skills` from `bash`. That directory is replaced from the host on the next command, so a clone made there disappears and the install starts over. When the tool returns, the next `bash` command finds the skill at `/home/user/skills/intent-engine-buy-side-agent-skill/`. There is no further install step.
+If this folder is not installed yet and the runtime has a skills tool, install this repository with that tool. The skill name is `intent-engine-buy-side-agent-skill` and the repository is `https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git`. Do not `git clone` into a skills directory that the runtime copies from the host. A clone there disappears on the next command, and the install starts over. When the tool returns, read `SKILL.md` from the installed folder. There is no further install step.
 
-Without a `skills` tool, clone the pinned release into a directory you control:
+Without a skills tool, clone the pinned release into a directory you control:
 
 ```bash
 mkdir -p ~/skills
 git clone --depth 1 --branch v0.1.1 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
 ```
 
-Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by its full path. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the payment skill: https://github.com/clinkbillcom/agentic-payment-skills.
+Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by its full path. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the user's payment skill.
 
 ## Running the CLI
 
-- `intent` below stands for `bin/intent` in this skill's folder. Call it by its full path; in HelloMinds that is `/home/user/skills/intent-engine-buy-side-agent-skill/bin/intent`.
+- `intent` below stands for `bin/intent` in this skill's folder. Call it by its full path.
 - It prints JSON. A failure prints `{"error": {"code", "message", "hint"}}` and exits 1: do what `hint` says, it names the next command. Exit 2 means a wrong flag; the error lists correct examples.
 - Every command is safe to run again: a repeat returns the earlier result instead of acting twice.
 - It talks to the service at `INTENT_SERVICE_URL`. `intent whoami` shows which service and which key.
@@ -83,14 +83,15 @@ It prints `id`, `address`, `d`, `status` and `seq`. Keep `d`: later commands nam
 
 ## 3a. Fund it (optional, demo only)
 
-A funded intent tells merchants that an active payment instruction backs it. This step is temporary: for now the network takes the instruction as this agent reports it, and nothing checks it with Clink. Skip it unless the user wants to show merchants their spending cap and has signed a Clink instruction for this purchase with the payment skill.
+A funded intent tells merchants that an active payment instruction backs it. This step is temporary: for now the network takes the instruction as this agent reports it, and nothing checks it with the payment enabler. Skip it unless the user wants to show merchants their spending cap and has signed a payment instruction for this purchase with the payment skill.
+
+Ask the payment skill for that instruction as JSON and save it as `instruction.json`. See [references/payment.md](references/payment.md). Then:
 
 ```bash
-clink instruction get --purchase-instruction-id <instruction id> --format json > instruction.json
 intent fund <d> --email <user's AIR email> --instruction instruction.json --dry-run
 ```
 
-`clink` is the payment skill's CLI; see [references/payment.md](references/payment.md) for where the instruction id comes from. The dry run prints the `claims`: the spending cap in minor units (15000 is 150.00), the title, the description and the merchant categories. Show them to the user and ask. After their yes, run the same command without `--dry-run`. It prints `issued: true`, and the credential appears in the user's AIR account. Then get the badge (3b).
+The dry run prints the `claims`: the spending cap in minor units (15000 is 150.00), the title, the description and the merchant categories. Show them to the user and ask. After their yes, run the same command without `--dry-run`. It prints `issued: true`, and the credential appears in the user's AIR account. Then get the badge (3b).
 
 - `FUNDING_NOT_ALLOWED` or `FUNDING_UNAVAILABLE`: this service funds only its demo testers. The intent stays up without funding; go on to collect offers.
 - `INSTRUCTION_NOT_ACTIVE`: the user has not finished signing the instruction, or it has ended. Tell the user.
@@ -187,4 +188,4 @@ intent decline <other offer id> --reason chose-another
 ## References
 
 - [references/commands.md](references/commands.md): every buyer command, its flags, output and errors
-- [references/payment.md](references/payment.md): from the handoff to a paid order, and funding from a Clink instruction
+- [references/payment.md](references/payment.md): from the handoff to a paid order, and funding from a payment instruction

@@ -5,7 +5,7 @@
 ```json
 {
   "v": 1,
-  "enabler": "clink",
+  "enabler": "<payment enabler>",
   "offer": "<offer id>",
   "intent": "30468:<buyer pubkey>:<d>",
   "merchant_pubkey": "<hex>",
@@ -30,7 +30,7 @@
 
 ## Pay with the payment skill
 
-Use the payment skill's UCP checkout flow. For Clink, read its `references/clink-ucp-checkout.md` first: it owns the route, its own purchase confirmation, the card and mandate checks and 3-D Secure. Give it these terms:
+Use the payment skill's UCP checkout flow. Read that skill first: it owns the route, its own purchase confirmation, the card and mandate checks, and 3-D Secure. Give it these terms:
 
 | The payment skill needs | Take it from |
 | --- | --- |
@@ -44,7 +44,7 @@ The payment skill asks the user to confirm again. That is expected: the user agr
 
 ## Amounts
 
-The handoff uses minor units, as UCP does: `2200` in HKD is HK$22.00. Clink's `--line-items` takes `item.price` as a major-unit decimal string, `"22.00"`. Convert exactly once:
+The handoff uses minor units, as UCP does: `2200` in HKD is HK$22.00. The payment skill takes `item.price` as a major-unit decimal string, `"22.00"`. Convert exactly once:
 
 - two-decimal currencies (HKD, USD, EUR, SGD, GBP): divide by 100, `2200` is `"22.00"`
 - zero-decimal currencies (JPY, KRW): no change, `2200` is `"2200"`
@@ -66,11 +66,11 @@ When `discount_codes` or `eligibility` is not empty, the offer's price relies on
 intent accept <offer id> --checkout created-checkout.json
 ```
 
-## Funding from a Clink instruction (temporary, demo only)
+## Funding from a payment instruction (temporary, demo only)
 
-`intent fund` turns a Clink VIC instruction into the funded credential merchants will see. The instruction comes from the payment skill: read its `references/clink-instruction.md`. `clink instruction create` prints `data.instructionId`, and the user signs it with a passkey; `clink instruction list --valid-only --payment-instrument-id <id> --format json` lists the active ones. Use an instruction the user created for this purchase.
+`intent fund` turns one payment instruction into the funded credential merchants will see. Ask the payment skill for an instruction the user created and signed for this purchase, and save the JSON it prints. Use an instruction that is active.
 
-`intent fund` reads the instruction's title, description, `amountLimit` and `currencyCode` (or its first mandate's), its mandates' `merchantCategoryCode`, its recurring frequency and `effectiveUntilTime`. Clink's `amountLimit` is in major units (`150.00`); the credential holds minor units (`15000`). The CLI converts once, so pass Clink's JSON unchanged.
+`intent fund` reads the instruction's title, description, `amountLimit` and `currencyCode` (or its first mandate's), its mandates' `merchantCategoryCode`, its recurring frequency and `effectiveUntilTime`. `amountLimit` is in major units (`150.00`); the credential holds minor units (`15000`). The CLI converts once, so pass the payment skill's JSON unchanged.
 
 When the user later pays for an offer on this intent, the payment skill's instruction matching should find this same instruction.
 

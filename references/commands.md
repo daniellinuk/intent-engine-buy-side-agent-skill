@@ -47,7 +47,7 @@ The AIR key stays in `air.json` beside the key file (mode 0600) and is never pri
 | `--currency` | no | ISO 4217, the currency the user prefers to pay in |
 | `--near` | no | geohash of 2 to 5 characters, from `intent geohash` |
 | `--country` | no | ISO 3166-1 alpha-2 ship-to country |
-| `--platform` | no | the agent platform, e.g. `hellominds` |
+| `--platform` | no | the name of this agent's runtime |
 | `--expires-in` | no | `90m`, `12h`, `7d`; at most `30d`, default `7d` |
 | `--claim` | no | reverse-domain claims the user could prove later, e.g. `com.example.coffee_club_member` |
 | `--local` | no | check with the local rules only, without asking the service |
@@ -60,7 +60,7 @@ Output: `{draft, flags, service_checked, ok_to_post}`. Each flag is `{field, kin
 
 ## fund (temporary, demo only)
 
-`intent fund <d> --email <AIR email> --instruction <file> [--dry-run]` reads what `clink instruction get --purchase-instruction-id <id> --format json` printed (a file, or `-` for stdin) and asks the service to put a funded instruction credential in that AIR account. Only an `ACTIVE` instruction works, and the service funds only the AIR emails on its demo list. For now nothing checks the instruction with Clink.
+`intent fund <d> --email <AIR email> --instruction <file> [--dry-run]` reads the payment instruction JSON from the payment skill (a file, or `-` for stdin) and asks the service to put a funded instruction credential in that AIR account. Only an `ACTIVE` instruction works, and the service funds only the AIR emails on its demo list. For now nothing checks the instruction with the payment enabler.
 
 Output: `{issued, intent, vct, claims, expires_at, instruction_id, duplicate}`. `claims` holds `network`, `instruction`, `spending_cap` (`amount` in minor units, `currency`, and `period` when the cap renews weekly, monthly or yearly), `title`, `description` and `merchant_categories`. `expires_at` is when the instruction ends (Unix seconds). `--dry-run` prints the claims without asking the service. Run again for the same intent, instruction and email, it issues nothing and prints the earlier result (`duplicate: true`).
 
@@ -129,8 +129,8 @@ Every error has a `hint` with the next step. The common ones:
 | `AIR_NOT_BOUND` | this agent is not connected to AIR yet: `intent air bind` |
 | `AIR_SESSION_FAILED` | AIR no longer accepts the agent's key: `intent air bind --new` |
 | `AIR_BIND_UNAVAILABLE` | this service does not connect agents to AIR |
-| `INSTRUCTION_INVALID` | `fund` got something other than `clink instruction get` output |
-| `INSTRUCTION_NOT_ACTIVE` | the Clink instruction is not signed yet, or has ended |
+| `INSTRUCTION_INVALID` | `fund` got JSON that is not a payment instruction |
+| `INSTRUCTION_NOT_ACTIVE` | the payment instruction is not signed yet, or has ended |
 | `FUNDING_NOT_ALLOWED`, `FUNDING_UNAVAILABLE` | this service does not fund this user; the intent stays up unfunded |
 | `ISSUER_FAILED` | the credential issuer failed; try again in a minute |
 | `CREDENTIAL_NOT_FOUND` | the user's AIR account holds no funded credential yet: fund the intent first |
