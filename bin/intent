@@ -3,7 +3,7 @@ set -eu
 dir=$(dirname -- "$(readlink -f -- "$0")")
 : "${INTENT_SERVICE_URL:=https://api.yentin.xyz}"
 : "${INTENT_SKILL_NAME:=intent-engine-buy-side-agent-skill}"
-: "${INTENT_SKILL_TAG:=v0.1.1}"
+: "${INTENT_SKILL_TAG:=v0.1.2}"
 export INTENT_SERVICE_URL INTENT_SKILL_NAME INTENT_SKILL_TAG
 case "$(uname -s)/$(uname -m)" in
   Linux/x86_64) exec "$dir/intent-linux-x86_64" "$@" ;;

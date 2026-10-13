@@ -18,7 +18,7 @@ Without a skills tool, clone the pinned release into a directory you control:
 
 ```bash
 mkdir -p ~/skills
-git clone --depth 1 --branch v0.1.1 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
+git clone --depth 1 --branch v0.1.2 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
 ```
 
 Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by its full path. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the user's payment skill.
