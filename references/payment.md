@@ -30,17 +30,21 @@
 
 ## Pay with the payment skill
 
-Use the payment skill's UCP checkout flow. Read that skill first: it owns the route, its own purchase confirmation, the card and mandate checks, and 3-D Secure. Give it these terms:
+Use the payment skill's UCP checkout flow. Read that skill first: it owns the route, its own purchase confirmation, the card and mandate checks, and 3-D Secure.
+
+When `live_session` is true, complete that checkout. Give the payment skill the endpoint, `checkout_id`, the currency, and the total. On a funded intent, complete the session with the active payment instruction. Do not create a second checkout from the product URL.
+
+The payment skill asks the user to confirm again. That is expected: the user agreed to the offer, and now confirms the payment.
+
+Create a session from the line items only when `live_session` is false. Then the payment skill needs:
 
 | The payment skill needs | Take it from |
 | --- | --- |
-| product URL | `line_items[].item_url` |
+| the URL of that exact item | `line_items[].item_url` |
 | quantity | `line_items[].quantity` |
 | unit price | `line_items[].item.price`, converted to major units |
 | currency | `currency` |
 | total, which must match exactly | `total`, converted to major units |
-
-The payment skill asks the user to confirm again. That is expected: the user agreed to the offer, and now confirms the payment.
 
 ## Amounts
 
@@ -60,7 +64,7 @@ When `discount_codes` or `eligibility` is not empty, the offer's price relies on
 
 ## When the merchant has no live session
 
-`intent accept` fails with `CHECKOUT_NOT_LIVE`, and the handoff is in `error.details.handoff` with `live_session: false`. Pay from that handoff the same way; the payment skill creates the session. Then save the checkout it created to a file and send the accept, which checks that checkout against the offer first:
+This is the fallback, for a merchant with no UCP session. `intent accept` fails with `CHECKOUT_NOT_LIVE`, and the handoff is in `error.details.handoff` with `live_session: false`. The payment skill creates the session from the item URLs. If the created total is not exactly `handoff.total`, stop. Tax or shipping that the offer left out is a mismatch. Tell the user. Do not pay it. When the totals match, save the checkout and send the accept, which checks that checkout against the offer first:
 
 ```bash
 intent accept <offer id> --checkout created-checkout.json

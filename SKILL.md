@@ -162,7 +162,8 @@ intent accept <offer id> --dry-run
 This re-reads the merchant's live checkout and compares it with the offer. Present the merchant, each item with quantity and price, the total and currency, and when the offer expires, converting minor units for display. Ask the user to confirm this exact offer.
 
 - `OFFER_MISMATCH`: the merchant changed the checkout. Tell the user; follow the hint to decline or wait for a new offer.
-- `checkout.live_session: false`: the merchant has no session yet; the payment step creates it. Say so.
+- `checkout.live_session: true`: this is the checkout to pay. On a funded intent the payment skill completes this session with the active payment instruction.
+- `checkout.live_session: false`: the merchant sent a quote, not a session. Say so. Payment has to create a session, and you accept only when its total equals the offer. Prefer an offer that already has a live session.
 
 ## 6. Accept and pay
 
@@ -172,7 +173,7 @@ After the user's yes:
 intent accept <offer id>
 ```
 
-It sends the accept to the merchant and prints `handoff`, the checked terms. Pay with the payment skill from that handoff: [references/payment.md](references/payment.md). Then decline every other offer, listed in `other_offers`:
+It sends the accept to the merchant and prints `handoff`, the checked terms. Pay with the payment skill from that handoff: [references/payment.md](references/payment.md). When `live_session` is true, complete that session. On a funded intent, complete it with the active payment instruction. Do not build a second checkout from the item URL. Then decline every other offer, listed in `other_offers`:
 
 ```bash
 intent decline <other offer id> --reason chose-another
