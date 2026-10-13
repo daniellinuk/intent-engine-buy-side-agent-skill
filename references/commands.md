@@ -15,6 +15,10 @@
 
 `state.json`, next to the key file, remembers the accepts, declines and funding already sent and where `--new` stopped. Losing it only means a repeat is sent again.
 
+## whoami
+
+`intent whoami` prints the key and the service, with its limits. When this copy is behind the release in `/.well-known/intent`, it also prints `skill_update`: `installed`, `current`, and `command`. Install that release before the next step. When the field is absent, this copy is current.
+
 ## key init / key show
 
 `intent key init` creates the key file (mode 0600) or, when it exists, shows it: `{pubkey, npub, key_file, source, created}`. `intent key show` prints the key in use. `intent key rotate --yes` cancels every open intent and switches to a new key; run it only if the key leaked.

@@ -27,6 +27,7 @@ Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by i
 
 - `intent` below stands for `bin/intent` in this skill's folder. Call it by its full path.
 - It prints JSON. A failure prints `{"error": {"code", "message", "hint"}}` and exits 1: do what `hint` says, it names the next command. Exit 2 means a wrong flag; the error lists correct examples.
+- Run `intent whoami` at the start. When the output has `skill_update`, install that release before the next step. `installed` is this copy, `current` is the release to install, and `command` clones it. Use a skills tool with that repository when you have one. Otherwise run `command` in a directory you control, then read the new `SKILL.md`. When `skill_update` is absent, this copy is current.
 - Every command is safe to run again: a repeat returns the earlier result instead of acting twice.
 - It talks to the service at `INTENT_SERVICE_URL`. `intent whoami` shows which service and which key.
 
