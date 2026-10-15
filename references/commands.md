@@ -25,7 +25,7 @@
 
 ## air bind / air credentials
 
-`intent air bind [--new]` connects this agent to the user's AIR account. The first run makes the agent's own AIR key and prints `{status: "pending", url, expires_at}`. Send the `url` to the user; they log in to AIR there and approve. Later runs check the same link and print `{status: "bound", user_id, key_id, partner_id}` once the user has approved; `error` holds AIR's code if their last try failed. An expired link is replaced on the next run. `--new` makes a new key and link, replacing the earlier binding.
+`intent air bind [--new]` connects this agent to the user's AIR account. Do this as soon as the payment skill says the user has signed a payment instruction, before `intent fund`, unless a previous run already printed `status: bound`. The first run makes the agent's own AIR key and prints `{status: "pending", url, expires_at}`. Send the `url` to the user; they log in to AIR there and approve. Later runs check the same link and print `{status: "bound", user_id, key_id, partner_id}` once the user has approved; `error` holds AIR's code if their last try failed. An expired link is replaced on the next run. `--new` makes a new key and link, replacing the earlier binding.
 
 The AIR key stays in `air.json` beside the key file (mode 0600) and is never printed; only its public half leaves the machine.
 

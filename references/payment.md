@@ -72,7 +72,7 @@ intent accept <offer id> --checkout created-checkout.json
 
 ## Funding from a payment instruction (temporary, demo only)
 
-`intent fund` turns one payment instruction into the funded credential merchants will see. Ask the payment skill for an instruction the user created and signed for this purchase, and save the JSON it prints. Use an instruction that is active.
+`intent fund` turns one payment instruction into the funded credential merchants will see. As soon as the payment skill says the user has signed the instruction, connect this agent to their AIR account if it is not connected yet: run `intent air bind`, send the `url` to the user, and wait until it prints `status: bound`. Then ask the payment skill for that instruction as JSON, and save what it prints. Use an instruction that is active.
 
 `intent fund` reads the instruction's title, description, `amountLimit` and `currencyCode` (or its first mandate's), its mandates' `merchantCategoryCode`, its recurring frequency and `effectiveUntilTime`. `amountLimit` is in major units (`150.00`); the credential holds minor units (`15000`). The CLI converts once, so pass the payment skill's JSON unchanged.
 
