@@ -93,6 +93,7 @@ Output: `{intent, intent_status, offers, expired, jev}`, and `invalid` for offer
 | `expires_at`, `expired` | when the offer lapses (Unix seconds) |
 | `fit` | 0 to 1 when Jev judged it; below 0.5 means it does not match the request |
 | `discount_codes`, `eligibility` | codes and claims the price relies on |
+| `loyalty` | memberships the merchant recognizes, keyed by claim: `name`, `tiers` with `benefits`, `rewards` with `earning_forecast`, and `provisional` until verified. `null` when the merchant sent none |
 | `endpoint`, `checkout_id` | where the merchant's checkout lives |
 | `supersedes` | the earlier offer this one replaces |
 

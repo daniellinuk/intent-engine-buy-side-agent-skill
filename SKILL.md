@@ -129,6 +129,8 @@ intent offers <d>
 
 Offers arrive over minutes or hours, so check again later; if you can schedule work, schedule `intent offers <d>`. Offers come best first. Each has an `id`, the `merchant`, `items`, a `total` in minor units (2250 is 22.50) with its `currency`, `expires_at`, and `fit` when the network could judge it (below 0.5 means it does not match the request).
 
+An offer may carry `loyalty`: the memberships the merchant recognizes for the user, with the tier, its benefits, and the rewards this purchase earns (`earning_forecast`). Mention them when you present the offer. Rewards are extra value; they are not taken off the `total`. `provisional: true` means the merchant has not verified the membership yet.
+
 ## 4a. Answer a proof request (optional)
 
 Before it offers, a merchant may ask privately whether a payment instruction funds the intent. While you collect offers, also check the inbox:
