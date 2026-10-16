@@ -80,7 +80,7 @@ Output: `{sent, id, type, request, merchant, intent, disclosed, duplicate}`. `di
 
 ## offers
 
-`intent offers <d> [--all]` lists the latest offer from each merchant, best first: offers that fit, then in the intent's currency, then the lowest total. `--all` includes expired offers.
+`intent offers <d> [--all]` lists the latest offer from each merchant, best first: offers that fit, then offers whose fulfillment does not fail the intent's, then in the intent's currency, then the lowest total. `--all` includes expired offers.
 
 Output: `{intent, intent_status, offers, expired, jev}`, and `invalid` for offers whose checkout fails the UCP schema. Each offer:
 
@@ -94,6 +94,14 @@ Output: `{intent, intent_status, offers, expired, jev}`, and `invalid` for offer
 | `fit` | 0 to 1 when Jev judged it; below 0.5 means it does not match the request |
 | `discount_codes`, `eligibility` | codes and claims the price relies on |
 | `loyalty` | memberships the merchant recognizes, keyed by claim: `name`, `tiers` with `benefits`, `rewards` with `earning_forecast`, and `provisional` until verified. `null` when the merchant sent none |
+| `totals` | the checkout's price lines as the merchant sent them, in order: `type`, `amount` in minor units, `display_text`. Discounts are negative |
+| `policies` | return, warranty and other terms: `type`, `description`, `applies_to`, `url`. `[]` when none |
+| `messages` | the merchant's notes as sent: `type` (`info`, `warning`, `error`), `code`, `content`, `path`, and `presentation` on warnings. `[]` when none |
+| `disclosures` | the warnings among `messages` with `presentation: "disclosure"`: show each one, word for word, beside what its `path` names |
+| `fulfillment` | how the order arrives: `methods`, each with a `type` (`shipping`, `pickup`, ...), the line items, and `groups` with `options` (`title`, `description`, `totals`, `earliest_fulfillment_time`, `latest_fulfillment_time`) and the `selected_option_id`. `null` when the merchant sent none |
+| `fulfillment_match` | `{type, window}`: `true` when the offer arrives the way and in the time the intent asked, `false` when not, `null` when the offer or the intent does not say |
+| `payment_terms`, `selected_term_id` | every payment term offered, each with `title` and `schedules` (`description`, `amount`, `type`, `due_at`), and the one in effect. `null` when payment is due in full at checkout |
+| `due_now` | what is charged at checkout, in minor units: the selected term's `immediate` schedules, or `total` when there are no terms |
 | `endpoint`, `checkout_id` | where the merchant's checkout lives |
 | `supersedes` | the earlier offer this one replaces |
 
@@ -101,7 +109,9 @@ Output: `{intent, intent_status, offers, expired, jev}`, and `invalid` for offer
 
 `intent accept <offer id> [--dry-run] [--checkout <file>]` checks the offer against the checkout that will be paid: the merchant's live session, re-read from the offer's endpoint, or the file an enabler created. Only when they match does it send the accept.
 
-Output: `{sent, id, duplicate, offer, checkout: {live_session, source, verified}, handoff, other_offers}`. A dry run prints the same without sending. Run again after it was sent, it sends nothing new (`sent: false, duplicate: true`) and prints the handoff again. The handoff is described in [payment.md](payment.md).
+Output: `{sent, id, duplicate, offer, checkout, handoff, other_offers}`. `checkout` has `live_session`, `source` and `verified`, and the terms of the checkout that will be paid, in the same fields as in `offers`: `totals`, `policies`, `messages`, `disclosures`, `fulfillment`, `fulfillment_match`, `payment_terms`, `selected_term_id` and `due_now`. A dry run prints the same without sending; when the merchant has no session, it shows the offer's terms. Run again after it was sent, it sends nothing new (`sent: false, duplicate: true`) and prints the handoff again. The handoff is described in [payment.md](payment.md).
+
+The checkout must keep the offer's items, prices, total, the fulfillment option selected for each item and the selected payment term. A `false` in `fulfillment_match` does not stop the accept; show it to the user.
 
 ## decline
 
@@ -126,7 +136,7 @@ Every error has a `hint` with the next step. The common ones:
 | `DRAFT_FLAGGED`, `INTENT_FORBIDDEN_DATA` | the text holds private data; `details.flags` names the fields |
 | `INTENT_CLOSED` | the intent is cancelled, fulfilled or expired |
 | `RATE_LIMITED` | too many posts or open intents for this key; wait |
-| `OFFER_MISMATCH` | the checkout no longer matches the offer; `details.mismatches` says how |
+| `OFFER_MISMATCH` | the checkout no longer matches the offer: items, prices, total, fulfillment option or payment term; `details.mismatches` says how |
 | `OFFER_SUPERSEDED` | the merchant sent a newer offer; `details.latest` is its id |
 | `OFFER_EXPIRED` | the offer lapsed |
 | `CHECKOUT_NOT_LIVE` | the merchant has no session; `details.handoff` has the terms for the payment enabler |

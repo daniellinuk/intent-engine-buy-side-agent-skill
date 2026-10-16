@@ -14,6 +14,8 @@
   "live_session": true,
   "currency": "HKD",
   "total": 11000,
+  "due_now": 11000,
+  "payment_term": null,
   "line_items": [
     {
       "id": "li_1",
@@ -22,19 +24,30 @@
       "item_url": "https://shop.example.com/products/flat-white"
     }
   ],
+  "fulfillment": null,
   "discount_codes": [],
   "eligibility": [],
   "continue_url": null
 }
 ```
 
+- `total` is everything the user owes for this order. `due_now` is what is charged when the checkout completes.
+- `payment_term` is `null` when everything is due at checkout; then `due_now` equals `total`. Otherwise it is the term the merchant selected, with its `schedules`: each payment's `description`, `amount`, `type` and, when known, `due_at`. A schedule whose `type` is not `immediate` is charged later.
+- `fulfillment` is how the order arrives, as the merchant sent it, or `null`. The merchant priced it for the intent's area, not an address.
+
 ## Pay with the payment skill
 
 Use the payment skill's UCP checkout flow. Read that skill first: it owns the route, its own purchase confirmation, the card and mandate checks, and 3-D Secure.
 
-When `live_session` is true, complete that checkout. Give the payment skill the endpoint, `checkout_id`, the currency, and the total. On a funded intent, complete the session with the active payment instruction. Do not create a second checkout from the product URL.
+When `live_session` is true, complete that checkout. Give the payment skill the endpoint, `checkout_id`, the currency, the total, and `due_now`. On a funded intent, complete the session with the active payment instruction. Do not create a second checkout from the product URL.
 
 The payment skill asks the user to confirm again. That is expected: the user agreed to the offer, and now confirms the payment.
+
+## Payments due later
+
+When `payment_term` has a schedule whose `type` is not `immediate`, part of the total is charged after checkout: a deposit now and the balance later, payments in installments, or an invoice due in 30 days. Before paying, give the payment skill the term's schedules and ask whether it can fund every one of them with the same payment method. Pay only if it says yes. Otherwise do not pay: decline the offer with `intent decline <offer id> --reason other` and tell the user that the payment method cannot cover the later payments.
+
+On a funded intent the payment instruction must cover the whole `total`, not only `due_now`.
 
 Create a session from the line items only when `live_session` is false. Then the payment skill needs:
 
@@ -45,6 +58,9 @@ Create a session from the line items only when `live_session` is false. Then the
 | unit price | `line_items[].item.price`, converted to major units |
 | currency | `currency` |
 | total, which must match exactly | `total`, converted to major units |
+| the delivery option, when the offer has one | the `selected_option_id` of each group in `fulfillment` |
+
+The created checkout must keep that delivery option and the offer's payment term, or `intent accept --checkout` refuses it.
 
 ## Amounts
 
