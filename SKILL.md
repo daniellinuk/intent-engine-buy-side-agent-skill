@@ -18,7 +18,7 @@ Without a skills tool, clone the pinned release into a directory you control:
 
 ```bash
 mkdir -p ~/skills
-git clone --depth 1 --branch v0.1.4 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
+git clone --depth 1 --branch v0.1.5 https://github.com/daniellinuk/intent-engine-buy-side-agent-skill.git ~/skills/intent-engine-buy-side-agent-skill
 ```
 
 Keep that folder name. Then read the `SKILL.md` there and call `bin/intent` by its full path. The CLI needs x86_64 Linux and internet access. Paying, and funding an intent, also need the user's payment skill.
@@ -97,7 +97,7 @@ intent fund <d> --email <user's AIR email> --instruction instruction.json --dry-
 
 The dry run prints the `claims`: the spending cap in minor units (15000 is 150.00), the title, the description and the merchant categories. Show them to the user and ask. After their yes, run the same command without `--dry-run`. It prints `issued: true`, and the credential appears in the user's AIR account. Then get the badge (3b).
 
-- `FUNDING_NOT_ALLOWED` or `FUNDING_UNAVAILABLE`: this service funds only its demo testers. The intent stays up without funding; go on to collect offers.
+- `FUNDING_UNAVAILABLE`: this service issues no credentials. The intent stays up without funding; go on to collect offers.
 - `INSTRUCTION_NOT_ACTIVE`: the user has not finished signing the instruction, or it has ended. Tell the user.
 
 ## 3b. Get the funded badge

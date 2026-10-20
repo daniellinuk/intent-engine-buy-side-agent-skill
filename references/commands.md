@@ -64,7 +64,7 @@ Output: `{draft, flags, service_checked, ok_to_post}`. Each flag is `{field, kin
 
 ## fund (temporary, demo only)
 
-`intent fund <d> --email <AIR email> --instruction <file> [--dry-run]` reads the payment instruction JSON from the payment skill (a file, or `-` for stdin) and asks the service to put a funded instruction credential in that AIR account. Only an `ACTIVE` instruction works, and the service funds only the AIR emails on its demo list. For now nothing checks the instruction with the payment enabler.
+`intent fund <d> --email <AIR email> --instruction <file> [--dry-run]` reads the payment instruction JSON from the payment skill (a file, or `-` for stdin) and asks the service to put a funded instruction credential in that AIR account. Only an `ACTIVE` instruction works. Any AIR email can receive the credential. For now nothing checks the instruction with the payment enabler.
 
 Output: `{issued, intent, vct, claims, expires_at, instruction_id, duplicate}`. `claims` holds `network`, `instruction`, `spending_cap` (`amount` in minor units, `currency`, and `period` when the cap renews weekly, monthly or yearly), `title`, `description` and `merchant_categories`. `expires_at` is when the instruction ends (Unix seconds). `--dry-run` prints the claims without asking the service. Run again for the same intent, instruction and email, it issues nothing and prints the earlier result (`duplicate: true`).
 
@@ -146,7 +146,7 @@ Every error has a `hint` with the next step. The common ones:
 | `AIR_BIND_UNAVAILABLE` | this service does not connect agents to AIR |
 | `INSTRUCTION_INVALID` | `fund` got JSON that is not a payment instruction |
 | `INSTRUCTION_NOT_ACTIVE` | the payment instruction is not signed yet, or has ended |
-| `FUNDING_NOT_ALLOWED`, `FUNDING_UNAVAILABLE` | this service does not fund this user; the intent stays up unfunded |
+| `FUNDING_UNAVAILABLE` | this service issues no credentials; the intent stays up unfunded |
 | `ISSUER_FAILED` | the credential issuer failed; try again in a minute |
 | `CREDENTIAL_NOT_FOUND` | the user's AIR account holds no funded credential yet: fund the intent first |
 | `PROOF_NOT_COMPLIANT`, `PROOF_REJECTED` | AIR's presentation did not pass the checks; the intent stays up without a badge |
