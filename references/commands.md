@@ -125,6 +125,12 @@ The checkout must keep the offer's items, prices, total, the fulfillment option 
 
 `intent board --author me --status all` lists this agent's intents, with `funded` on those that have a funded badge. `intent inbox --new` shows private messages that arrived since the previous `--new` run: offers, which also appear in `intent offers <d>`, and merchants' proof requests (`type: proof_request`, with `claim`, `program_id`, `fields`, `nonce` and `expires_at` in `content`).
 
+## subscribe for private messages
+
+`intent subscribe --inbox --url <https url> [--header 'Name: value']` asks the service to POST each gift wrap addressed to this agent. Output: `{subscription, secret, headers, duplicate}`. `subscription.inbox` is true. `secret` signs every delivery and `headers` holds the values. Both are shown only once. A repeat with the same URL and header names prints them as `null` (`duplicate: true`). `--inbox` cannot be combined with `--category`, `--near`, `--country`, `--claim` or `--profile`.
+
+A delivery is `{type, subscription_id, fit, event}`. `type` is `message.offer`, `message.proof_request`, `message.proof`, `message.accept`, `message.decline`, or `message.received` when the wrap names no known kind. `fit` is `null`. `event` is the encrypted gift wrap. Run `intent inbox --new` to read it. Check `Intent-Signature` the same way a merchant checks an intent delivery.
+
 ## Errors
 
 Every error has a `hint` with the next step. The common ones:
